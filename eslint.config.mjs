@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Unzipped copies of this project inside the folder
+    "sukoon-content-agent/**",
   ]),
 ]);
 

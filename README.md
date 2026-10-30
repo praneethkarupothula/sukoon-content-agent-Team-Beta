@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sukoon Studio Content Workspace
 
-## Getting Started
+A local-first, organization-scoped workspace for researching a campaign topic and preparing an editable multi-channel content pack. It includes a Next.js App Router UI, server-side API routes, Zod schemas, a configurable OpenAI-compatible text provider, optional Brave Search, and a separate image provider.
 
-First, run the development server:
+## Requirements
+
+- Node.js 20.9 or newer (tested here with Node 24)
+- npm
+
+## Run locally
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Campaign generation requires `GEMINI_API_KEY`; add your provider credentials to `.env.local` and restart the development server. The workspace starts with no campaigns.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Campaigns and brand edits persist to `data/store.json`; generated image files are stored under `public/generated/`. These runtime files are ignored by git.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Providers
 
-## Learn More
+All keys are server-side environment variables and must not use a `NEXT_PUBLIC_` prefix.
 
-To learn more about Next.js, take a look at the following resources:
+### Text generation (Google Gemini)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set in `.env.local`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```dotenv
+GEMINI_API_KEY=your-key        # from https://aistudio.google.com/apikey
+GEMINI_MODEL=gemini-3.8-flash  # optional override
+```
 
-## Deploy on Vercel
+Structured generation uses the Vercel AI SDK (`@ai-sdk/google`) and Zod. A configured provider may incur costs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Languages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Every deliverable (blog, LinkedIn, X, Instagram, Meta ads, Google ads) can use its own language: English or any of the 22 scheduled Indian languages, in native or Roman script, and code-mixed styles (Hinglish, Tanglish, Tenglish, Kanglish, Manglish, Banglish, or any custom mix of up to three languages with light/balanced/heavy mixing). Choose once for all deliverables or per deliverable when creating a campaign, and switch any single deliverable to another language later with **Rewrite → Regenerate**. The image brief stays in English.
+
+### Platform templates
+
+Deliverables are reviewed and edited in platform-style templates (X thread cards, Instagram post, LinkedIn post, Meta feed ads, Google search ads, blog article, creative brief) with live character counters. **Copy all** and **.txt** give platform-ready text; **Export pack** downloads a Markdown brief.
+
+### Live search (optional)
+
+Set `BRAVE_SEARCH_API_KEY` to enable Brave Search. Without it, supplied article URLs and the organization's optional official website are the only possible live sources. A plain topic with no retrieved source goes through explicitly labelled topic-only generation. Search snippets and retrieved pages are inputs, not verified evidence; reviewers must check the cited sources. Search has separate provider terms and may incur costs.
+
+### Image generation (Ideogram)
+
+Images use a separate, server-only Ideogram API key. Create one in the [Ideogram API dashboard](https://developer.ideogram.ai/v2/ideogram-api/api-setup.md).
+
+```dotenv
+IDEOGRAM_API_KEY=your-key
+IMAGE_GENERATION=on
+```
+
+For existing local setups, `IMAGE_API_KEY` is also accepted when `IDEOGRAM_API_KEY` is not set. `IMAGE_GENERATION=off` skips images. Restart the development server after changing `.env.local`.
+
+Images are prompted from the generated creative brief plus the campaign topic, objective, audience, and brand context. They use the nearest supported aspect ratio and are saved under `data/generated/`, served from `/api/images/…`. Review the image concept before generating; edit its subject and composition to correct an off-topic brief. Use **Generate a new variation** for another take. If generation fails, the content pack remains available and the image can be retried.
+
+## Workflow
+
+1. Select the seeded Sukoon Studio organization and edit its profile if needed.
+2. Create a campaign from a topic or an HTTP(S) article URL and choose an objective.
+3. The server retrieves safe source material when available, creates a structured content pack, checks Google ad and X character limits, and optionally generates an image.
+4. Edit or regenerate deliverables, save changes, copy them, and export Markdown or JSON.
+5. Explicitly approve after human review. Approval records a decision only; there is no social publishing integration.
+
+The pack includes one blog post, one LinkedIn post, one X thread, one Instagram caption, three Meta ads, three Google ad asset sets, one image concept, and image-generation status. A source URL is restricted to HTTP(S), standard ports, public DNS/IP addresses, limited redirects, an eight-second timeout, and a 1 MB response limit. Page text is treated as untrusted evidence, never as instructions.
+
+## Architecture
+
+- `src/app/` — App Router UI, server routes, and campaign actions
+- `src/lib/validation/` — Zod schemas and channel limits
+- `src/lib/ai/` — centralized structured-generation prompt
+- `src/lib/research/` — URL safety and configurable search workflow
+- `src/lib/workflow/` — orchestration, provider calls, and progress
+- `src/lib/db/` — JSON-file persistence and organization-scoped access
+- `src/lib/data/` — initial Sukoon Studio profile
+- `tests/` — schema and platform-limit tests
+
+## Checks
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+## Prototype limitations
+
+- This is a local prototype, not a production multi-tenant deployment. There is no authentication or authorization; do not expose it to untrusted networks.
+- JSON persistence is suitable for a single local process, not concurrent multi-instance deployment. Use a transactional database before production.
+- The initial organization is Sukoon Studio. Organization IDs are part of the data model, but onboarding, authentication, and access controls for additional tenants are not implemented.
+- Search results and supplied sources are not independently fact-checked; human review is required.
+- Researching URLs and image generation require network access. Provider availability, content policies, and costs are outside this prototype.
+- No content is published to social networks or advertising platforms.
+# sukoon-content-agent-Team-Beta

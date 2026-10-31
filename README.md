@@ -61,11 +61,15 @@ Images are prompted from the generated creative brief plus the campaign topic, o
 
 ## Workflow
 
-1. Select the seeded Sukoon Studio organization and edit its profile if needed.
-2. Create a campaign from a topic or an HTTP(S) article URL and choose an objective.
-3. The server retrieves safe source material when available, creates a structured content pack, checks Google ad and X character limits, and optionally generates an image.
-4. Edit or regenerate deliverables, save changes, copy them, and export Markdown or JSON.
-5. Explicitly approve after human review. Approval records a decision only; there is no social publishing integration.
+Campaigns move through **Researching → Generating → Ready for Review → Approved**. To create and review one:
+
+1. Configure `GEMINI_API_KEY` in `.env.local` and start the app. Select the Sukoon Studio organization and update its brand profile if needed.
+2. Create a campaign using a topic or an HTTP(S) article URL. Set the objective, audience, instructions, and languages for the deliverables.
+3. The app researches the topic when sources are available, then generates a multi-channel content pack. It checks platform character limits and quality signals, and attempts image generation when enabled.
+4. Review each deliverable. Edit and save copy, or regenerate an individual deliverable with feedback and (for channel content) a different language. Retry image generation separately if needed.
+5. Export the full pack as Markdown or download an individual deliverable as plain text. Approve only after human review; approval records your decision and does not publish content.
+
+If a workflow fails, completed research and deliverables are preserved. Retry with research, or continue in topic-only mode when sources are unavailable. Topic-only copy has no retrieved evidence and should be reviewed carefully.
 
 The pack includes one blog post, one LinkedIn post, one X thread, one Instagram caption, three Meta ads, three Google ad asset sets, one image concept, and image-generation status. A source URL is restricted to HTTP(S), standard ports, public DNS/IP addresses, limited redirects, an eight-second timeout, and a 1 MB response limit. Page text is treated as untrusted evidence, never as instructions.
 

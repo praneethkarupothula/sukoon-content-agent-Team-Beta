@@ -90,12 +90,12 @@ npm run build
 ```
 
 ## Current scope
--This is a working model for local, single-user use. It isn’t set up yet as a multi-tenant production service.
--Access: There’s no login or access control yet, so run it on a trusted machine or network only.
--Storage: Data is saved in local JSON files, which suits a single running instance. Multi-instance or high-traffic use needs a transactional database.
--Organizations: It’s set up for Sukoon Studio. The data model already uses organization IDs, but onboarding, login and access controls for other organizations aren’t built yet.
--Fact-checking: Research results and supplied sources aren’t checked independently. A person must review content before it goes out.
--External services: URL research and image generation need network access. Provider availability, content policies and costs depend on Gemini and Ideogram.
--Publishing: Content isn’t posted to social networks or ad platforms. The app produces content that’s ready to review, copy and export.
+- This is a working model for local, single-user use. It isn’t set up yet as a multi-tenant production service.
+- Access: There’s no login or access control yet, so run it on a trusted machine or network only.
+- Storage: Data is saved in local JSON files, which suits a single running instance. Multi-instance or high-traffic use needs a transactional database.
+- Organizations: It’s set up for Sukoon Studio. The data model already uses organization IDs, but onboarding, login and access controls for other organizations aren’t built yet.
+- Fact-checking: Research results and supplied sources aren’t checked independently. A person must review content before it goes out.
+- External services: URL research and image generation need network access. Provider availability, content policies and costs depend on Gemini and Ideogram.
+- Publishing: Content isn’t posted to social networks or ad platforms. The app produces content that’s ready to review, copy and export.
 # sukoon-content-agent-Team-Beta
 

@@ -29,7 +29,7 @@ Set in `.env.local`:
 
 ```dotenv
 GEMINI_API_KEY=your-key        # from https://aistudio.google.com/apikey
-GEMINI_MODEL=gemini-3.8-flash  # optional override
+GEMINI_MODEL=gemini-3.5-flash-lite  # optional override
 ```
 
 Structured generation uses the Vercel AI SDK (`@ai-sdk/google`) and Zod. A configured provider may incur costs.
